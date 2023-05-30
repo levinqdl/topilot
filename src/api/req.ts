@@ -1,12 +1,15 @@
 import fetch from "cross-fetch";
 import createHttpsProxyAgent, { HttpsProxyAgent } from "https-proxy-agent";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export function req(
   path: string,
   options: { method?: string; body?: Record<string, unknown>; host?: string; token?: string; } = {}
 ) {
   const {
-    method, body, host = process.env.MESS_HOST, token = process.env.MESS_TOKEN,
+    method, body, host = process.env.TOPILOT_HOST ?? "https://topilot.dev", token = process.env.TOPILOT_TOKEN,
   } = options;
   if (!host) throw new Error("Missing host");
   if (!token) throw new Error("Missing token");

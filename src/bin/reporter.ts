@@ -34,7 +34,7 @@ import {
       }
       
   
-      console.log(JSON.stringify({tests: results, host: process.env.MESS_HOST, token: process.env.MESS_TOKEN}));
+      console.log(JSON.stringify({tests: results}));
     }
   
     onTestBegin(test: TestCase, result: TestResult) {

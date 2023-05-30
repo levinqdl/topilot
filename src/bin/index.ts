@@ -15,11 +15,11 @@ program
   .description("Push tests to topilot")
   .action(async () => {
     const {stdout} = await exec("npx playwright test --list --reporter "+__dirname+"/reporter.js");
-    const { tests, ...options  }= JSON.parse(stdout);
+    const { tests }= JSON.parse(stdout);
     const branch = await getCurrentBranch();
+    
     console.log(`Pushing ${tests.length} tests to topilot from branch ${branch}.`);
-
-    await push(branch, tests, options)
+    await push(branch, tests)
   });
 
 program.parse(process.argv);
