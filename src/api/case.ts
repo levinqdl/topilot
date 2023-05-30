@@ -11,3 +11,9 @@ export async function push(branch: string, tests: any, options?: { host: string;
     token,
   });
 }
+
+export async function pull(branch: string) {
+  const resp = await req(`/api/sync?branch=${branch}`)
+  const {tests} = await resp.json()
+  return tests
+}
