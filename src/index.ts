@@ -41,7 +41,7 @@ let topilot = test.extend<{ faillingWithFixture: void }>({
 for (const fixture of fixtures) {
   const { setup, teardown, name } = require(path.join(process.cwd(), fixture));
   const fn = async (fixtures: any, use: any) => {
-    let state = await pull();
+    let state = process.env.CI ? {} : await pull();
     let value = state?.[name];
     let setupped = false;
     if (!value) {
