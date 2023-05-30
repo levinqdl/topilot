@@ -1,5 +1,5 @@
 import { getFixtures } from "./getFixtures"
-import { push } from "./req"
+import { push } from "./api/fixture"
 import skippedTeardowns from "./skippedTeardowns"
 
 const wrap = (fn: (...args: any)=> any) => {

@@ -1,7 +1,7 @@
 import fixtures from "./fixtures";
 import { test } from "@playwright/test";
 import path from "path";
-import { push, pull } from "./req";
+import { push, pull } from "./api/fixture";
 import skippedTeardowns from "./skippedTeardowns";
 import { getFixtures } from "./getFixtures";
 
