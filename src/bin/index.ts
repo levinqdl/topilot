@@ -14,16 +14,22 @@ program
   .command("push")
   .description("Push tests to topilot")
   .action(async () => {
-    const {stdout} = await exec("npx playwright test --list --reporter "+__dirname+"/reporter.js");
-    const { tests }= JSON.parse(stdout);
+    const { stdout } = await exec(
+      "npx playwright test --list --reporter " + __dirname + "/reporter.js"
+    );
+    const { tests } = JSON.parse(stdout);
     const branch = await getCurrentBranch();
-    
-    console.log(`Pushing ${tests.length} tests to topilot from branch ${branch}.`);
-    await push(branch, tests)
+
+    console.log(
+      `Pushing ${tests.length} tests to topilot from branch ${branch}.`
+    );
+    await push(branch, tests);
+  });
+program
+  .command("play")
+  .description("Play fixtures")
+  .action(() => {
+    playFixture();
   });
 
 program.parse(process.argv);
-
-if (program.args.length === 0) {
-  playFixture();
-}
