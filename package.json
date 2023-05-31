@@ -1,6 +1,6 @@
 {
   "name": "topilot",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "topilot CLI tool",
   "main": "./dist/index.js",
   "bin": "./dist/bin/index.js",
