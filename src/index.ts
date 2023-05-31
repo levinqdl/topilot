@@ -1,11 +1,11 @@
 import fixtures from "./fixtures";
 import { test } from "@playwright/test";
 import path from "path";
-import { push, pull } from "./api/fixture";
 import skippedTeardowns from "./skippedTeardowns";
 import { getFixtures } from "./getFixtures";
 import * as caseApi from "./api/case";
 import { getCurrentBranch } from "./api/getCurrentBranch";
+import { getFixtureFn } from "./getFixtureFn";
 
 export interface Fixtures {}
 
@@ -40,27 +40,9 @@ let topilot = test.extend<{ faillingWithFixture: void }, Fixtures>({
   ],
 });
 
-for (const fixture of fixtures) {
-  const { setup, teardown, name } = require(path.join(process.cwd(), fixture));
-  const fn = async (fixtures: any, use: any) => {
-    let state = process.env.CI ? {} : await pull();
-    let value = state?.[name];
-    let setupped = false;
-    if (!value) {
-      state = await setup(fixtures);
-      value = state?.[name];
-      setupped = true;
-      console.log(`topilot: setup ${name} ${JSON.stringify(value)}`);
-    } else {
-      console.log(`topilot: pull ${name} ${JSON.stringify(value)}`);
-    }
-    await use(value);
-    if (setupped) {
-      const nextValue = await teardown({ fixtures, ...state, [name]: value });
-      await push(nextValue);
-      console.log(`topilot: push ${JSON.stringify(nextValue)}`);
-    }
-  };
+for (const fixtureFile of fixtures) {
+  const { setup, teardown, name } = require(path.join(process.cwd(), fixtureFile));
+  const fn = getFixtureFn({ name, setup, teardown });
   fn.toString = () => setup.toString();
   topilot = topilot.extend({
     [name]: [fn, { scope: "worker" }],

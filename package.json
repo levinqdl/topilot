@@ -30,7 +30,8 @@
   },
   "devDependencies": {
     "@types/inquirer": "^9.0.3",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "vitest": "^0.31.2"
   },
   "files": [
     "dist"
