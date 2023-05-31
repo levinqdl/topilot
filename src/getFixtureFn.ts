@@ -25,8 +25,10 @@ export function getFixtureFn({ name, setup, teardown }: Fixture): FixtureFn {
     await use(value);
     if (setupped) {
       const nextValue = await teardown({ ...fixtures, ...state, [name]: value });
-      await push(nextValue);
-      console.log(`topilot: push ${JSON.stringify(nextValue)}`);
+      if (!process.env.CI) {
+        await push(nextValue);
+        console.log(`topilot: push ${JSON.stringify(nextValue)}`);
+      }
     }
   };
 }

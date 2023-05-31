@@ -1,11 +1,15 @@
 import { getFixtureFn } from './getFixtureFn';
-import { expect, test, vi } from 'vitest';
+import { beforeEach, expect, test, vi } from 'vitest';
 import * as fixtureApi from './api/fixture';
 
 vi.mock('./api/fixture', () => ({
     pull: vi.fn().mockResolvedValue({}),
     push: vi.fn(),
 }));
+
+beforeEach(() => {
+    vi.resetAllMocks();
+});
 
 test('getFixtureFn should call setup and teardown functions and push the next value to state', async () => {
     const name = 'foo';
@@ -64,5 +68,7 @@ test('getFixtureFn should not call pull if running on CI', async () => {
 
     expect(use).toHaveBeenCalledWith(undefined);
     expect(use).toHaveBeenCalledTimes(1);
+    expect(fixtureApi.pull).not.toHaveBeenCalled();
+    expect(fixtureApi.push).not.toHaveBeenCalled();
     process.env.CI = undefined;
 });
