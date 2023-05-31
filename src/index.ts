@@ -7,6 +7,8 @@ import { getFixtures } from "./getFixtures";
 import * as caseApi from "./api/case";
 import { getCurrentBranch } from "./api/getCurrentBranch";
 
+export interface Fixtures {}
+
 function markFixturesTeardownSkipped(fn: any) {
   const fixtureNames = getFixtures(fn);
   for (const fixtureName of fixtureNames) {
@@ -21,7 +23,7 @@ interface Test {
   selected?: boolean;
 }
 
-let topilot = test.extend<{ faillingWithFixture: void }>({
+let topilot = test.extend<{ faillingWithFixture: void }, Fixtures>({
   faillingWithFixture: [
     async ({}, use, testInfo) => {
       await use();

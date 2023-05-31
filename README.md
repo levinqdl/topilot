@@ -112,6 +112,25 @@ Here are the steps to follow:
 
 When your Playwright tests are triggered in a CI/CD environment, only the selected key cases will be run. Other cases will be skipped to save time and focus on what really changed and matters.
 
+## Typescript
+
+To get typescript not yelling at you with the unknown fixture error, we should extend topilot with module merging.
+
+```tsx
+// my-fixture.fixture.ts
+declare module "topilot" {
+  interface Fixtures {
+    "myFixture": string
+  }
+}
+
+export const setup = () => {}
+
+export const teardown = () => {}
+
+export const name = "myFixture"
+```
+
 ## License
 
 This package is licensed under the MIT license. See LICENSE for more information.
