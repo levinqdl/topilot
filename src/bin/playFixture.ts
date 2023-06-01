@@ -8,10 +8,10 @@ async function playTest(testFileName: any, title: string) {
     "playwright",
     "test",
     "-c",
-    ".topilot/playwright.config.js",
+    "node_modules/.topilot/playwright.config.js",
     "--project=chromium",
     "--reporter=line",
-    `.topilot/${testFileName}`,
+    `node_modules/.topilot/${testFileName}`,
     "-g",
     title,
   ]);
@@ -33,11 +33,12 @@ async function createTestOfFixture(answers: any) {
     .replace(".fixture.ts", "");
   const testFileName = answers.fixture.replace(".fixture.ts", ".test.js");
   const content = `
-import {setup, teardown} from "${process.cwd()}/${answers.fixture.replace(
-    ".ts",
-    ""
-  )}";
-import test, {wrap} from 'topilot';
+const { setup, teardown } = require("${process.cwd()}/${answers.fixture.replace(
+  ".ts",
+  ""
+)}");
+const test = require('topilot').default;
+const { wrap } = require('topilot');
 
 test.describe("${fixtureName}", () => {
     test("setup", wrap(setup));
@@ -52,9 +53,9 @@ async function createConfig() {
   await writeFile(
     "playwright.config.js",
     `
-const config = require('../playwright.config');
-
-config.testDir = './.topilot';
+const config = require('../../playwright.config');
+    
+config.testDir = './node_modules/.topilot';
 
 module.exports = config;
 `
