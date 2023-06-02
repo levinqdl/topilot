@@ -41,7 +41,10 @@ let topilot = test.extend<{ faillingWithFixture: void }, Fixtures>({
 });
 
 for (const fixtureFile of fixtures) {
-  const { setup, teardown, name } = require(path.join(process.cwd(), fixtureFile));
+  const { setup, teardown, name } = require(path.join(
+    process.cwd(),
+    fixtureFile
+  ));
   const fn = getFixtureFn({ name, setup, teardown });
   fn.toString = () => setup.toString();
   topilot = topilot.extend({
@@ -49,8 +52,8 @@ for (const fixtureFile of fixtures) {
   });
 }
 
-if (process.env.CI)
-  topilot.extend<{ shouldRun: void }, { keyCases: Test[] }>({
+if (process.env.CI) {
+  topilot = topilot.extend<{ shouldRun: void }, { keyCases: Test[] }>({
     keyCases: [
       async ({}, use) => {
         const branch = await getCurrentBranch();
@@ -74,6 +77,7 @@ if (process.env.CI)
       { auto: true },
     ],
   });
+}
 
 export default topilot;
 export { default as wrap } from "./wrap";
