@@ -7,7 +7,7 @@ import {
     TestResult,
   } from "@playwright/test/reporter";
   
-  class TopilotReporter implements Reporter {
+  class FixtureReporter implements Reporter {
     async onBegin(config: FullConfig, suite: Suite) {
       const files = new Map();
       suite.allTests().forEach((t) => {
@@ -50,5 +50,5 @@ import {
     }
   }
   
-  export default TopilotReporter;
+  export default FixtureReporter;
   

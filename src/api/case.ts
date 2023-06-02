@@ -1,4 +1,4 @@
-import { req } from "./req";
+import req from "./req";
 
 export async function push(branch: string, tests: any, options?: { host: string; token: string }) {
   const { host, token } = options ?? {};

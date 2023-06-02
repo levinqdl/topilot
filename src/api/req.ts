@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export function req(
+export default function req(
   path: string,
   options: { method?: string; body?: Record<string, unknown>; host?: string; token?: string; } = {}
 ) {
