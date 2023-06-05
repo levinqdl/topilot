@@ -1,4 +1,5 @@
 import { push, pull } from "./api/fixture";
+import skippedTeardowns from "./skippedTeardowns";
 
 type FixtureFn = (
   fixtures: any,
@@ -23,7 +24,7 @@ export function getFixtureFn({ name, setup, teardown }: Fixture): FixtureFn {
       console.log(`topilot: pull ${name} ${JSON.stringify(value)}`);
     }
     await use(value);
-    if (setupped) {
+    if (setupped && !skippedTeardowns.has(name)) {
       const nextValue = await teardown({ ...fixtures, ...state, [name]: value });
       if (!process.env.CI) {
         await push(nextValue);

@@ -1,10 +1,15 @@
 import { getFixtureFn } from './getFixtureFn';
 import { beforeEach, expect, test, vi } from 'vitest';
 import * as fixtureApi from './api/fixture';
+import skippedTeardowns from './skippedTeardowns';
 
 vi.mock('./api/fixture', () => ({
     pull: vi.fn().mockResolvedValue({}),
     push: vi.fn(),
+}));
+
+vi.mock('./skippedTeardowns', () => ({
+    default: new Set(),
 }));
 
 beforeEach(() => {
@@ -72,3 +77,15 @@ test('getFixtureFn should not call pull if running on CI', async () => {
     expect(fixtureApi.push).not.toHaveBeenCalled();
     process.env.CI = undefined;
 });
+
+test('getFixtureFn should not call teardown if a test requring the fixture failed', async () => {
+    const name =  'foo'
+    const fixtures = { baz: 'qux'}
+    const use = vi.fn()
+    skippedTeardowns.add('foo')
+
+    const teardown = vi.fn();
+    await getFixtureFn({ name, setup: vi.fn(), teardown: teardown })(fixtures, use);
+
+    expect(teardown).not.toHaveBeenCalled();
+})
