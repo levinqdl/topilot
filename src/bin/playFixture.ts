@@ -3,6 +3,8 @@ import child_process from "child_process";
 import { writeFile } from "../writeFile";
 import fixtures from "../fixtures";
 
+import path from "path";
+
 async function playTest(testFileName: any, title: string) {
   const child = await child_process.spawn("npx", [
     "playwright",
@@ -11,10 +13,10 @@ async function playTest(testFileName: any, title: string) {
     "node_modules/.topilot/playwright.config.js",
     "--project=chromium",
     "--reporter=line",
-    `node_modules/.topilot/${testFileName}`,
+    path.join("node_modules", ".topilot", testFileName).replace(/\\/g, '/'),
     "-g",
     title,
-  ]);
+  ], {shell: process.platform === "win32"});
   child.stdout.on("data", (data) => {
     console.log(data.toString());
   });
@@ -27,16 +29,13 @@ async function playTest(testFileName: any, title: string) {
 }
 
 async function createTestOfFixture(answers: any) {
-  const fixtureName = answers.fixture
-    .split("/")
-    .slice(-1)[0]
-    .replace(".fixture.ts", "");
+  const fixtureName = path.basename(answers.fixture, ".fixture.ts");
   const testFileName = answers.fixture.replace(".fixture.ts", ".test.js");
   const content = `
-const { setup, teardown } = require("${process.cwd()}/${answers.fixture.replace(
+const { setup, teardown } = require(${JSON.stringify(path.join(process.cwd(), answers.fixture.replace(
   ".ts",
   ""
-)}");
+)))});
 const test = require('topilot').default;
 const { wrap } = require('topilot');
 
@@ -53,9 +52,9 @@ async function createConfig() {
   await writeFile(
     "playwright.config.js",
     `
-const config = require('../../playwright.config');
+const config = require(${JSON.stringify(path.join('..', '..', 'playwright.config'))});
     
-config.testDir = './node_modules/.topilot';
+config.testDir = ${JSON.stringify(path.join('.', 'node_modules', '.topilot'))};
 
 module.exports = config;
 `
