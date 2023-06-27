@@ -29,17 +29,16 @@ async function playTest(testFileName: any, title: string) {
 }
 
 async function createTestOfFixture(answers: any) {
-  const fixtureName = path.basename(answers.fixture, ".fixture.ts");
   const testFileName = answers.fixture.replace(".fixture.ts", ".test.js");
   const content = `
-const { setup, teardown } = require(${JSON.stringify(path.join(process.cwd(), answers.fixture.replace(
+const { setup, teardown, name } = require(${JSON.stringify(path.join(process.cwd(), answers.fixture.replace(
   ".ts",
   ""
 )))});
 const test = require('topilot').default;
 const { wrap } = require('topilot');
 
-test.describe("${fixtureName}", () => {
+test.describe(name, () => {
     test("setup", wrap(setup));
     test("teardown", wrap(teardown));
 });
