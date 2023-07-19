@@ -1,22 +1,35 @@
 import { push, pull } from "./api/fixture";
+import parseSchema from "./bin/parseSchema";
 import skippedTeardowns from "./skippedTeardowns";
+import * as Zod from "zod";
 
 type FixtureFn = (
   fixtures: any,
   use: (value: any) => Promise<void>
 ) => Promise<void>;
-interface Fixture {
+
+interface Fixture<TOptions = any> {
   name: string;
-  setup: (fixtures: any) => Promise<any>;
+  setup: (fixtures: any, options: TOptions) => Promise<any>;
   teardown: (state: any) => Promise<any>;
+  schema?: Zod.ZodType<TOptions>;
 }
-export function getFixtureFn({ name, setup, teardown }: Fixture): FixtureFn {
+
+export function getFixtureFn({ name, setup, teardown, schema }: Fixture): FixtureFn {
   return async (fixtures, use) => {
     let state: any = process.env.CI ? {} : await pull();
     let value = state?.[name];
     let setupped = false;
     if (!value) {
-      state = await setup(fixtures);
+      let options: any = {};
+      if (schema) {
+        const properties = parseSchema(schema);
+        options = properties.reduce<{[s: string]: any}>((acc, { name, options }) => {
+          acc[name] = options[Math.floor(Math.random() * options.length)]
+          return acc;
+        }, {})
+      }
+      state = await setup(fixtures, options);
       value = state?.[name];
       setupped = true;
       console.log(`topilot: setup ${name} ${JSON.stringify(value)}`);

@@ -41,11 +41,11 @@ let topilot = test.extend<{ faillingWithFixture: void }, Fixtures>({
 });
 
 for (const fixtureFile of fixtures) {
-  const { setup, teardown, name } = require(path.join(
+  const { setup, teardown, name, schema } = require(path.join(
     process.cwd(),
     fixtureFile
   ));
-  const fn = getFixtureFn({ name, setup, teardown });
+  const fn = getFixtureFn({ name, setup, teardown, schema });
   fn.toString = () => setup.toString();
   topilot = topilot.extend({
     [name]: [fn, { scope: "worker" }],

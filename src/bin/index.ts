@@ -6,7 +6,10 @@ import util from "util";
 import { push } from "../api/case";
 import { getCurrentBranch } from "../api/getCurrentBranch";
 import inquirer from "inquirer";
-import { groupBy, uniq, uniqBy } from "lodash";
+import { groupBy, uniqBy } from "lodash";
+import fixtures from "../fixtures";
+import { requireSchema } from "./requireSchema";
+import { zodToJsonSchema } from "zod-to-json-schema";
 const TreePrompt = require("inquirer-tree-prompt");
 
 const exec = util.promisify(child_process.exec);
@@ -22,6 +25,13 @@ program
       "npx playwright test --list --reporter " + __dirname + "/reporter.js"
     );
     let { tests } = JSON.parse(stdout);
+
+    const fixtureSchemas: any = {}
+    fixtures.forEach((fixture) => {
+      const {name, schema} = requireSchema(fixture);
+      if (schema)
+        fixtureSchemas[name] = zodToJsonSchema(schema);
+    });
     const branch = await getCurrentBranch();
 
     if (options.interactive) {
@@ -31,7 +41,7 @@ program
     console.log(
       `Pushing ${tests.length} tests to topilot from branch ${branch}.`
     );
-    await push(branch, tests);
+    await push(branch, {tests, fixtures: fixtureSchemas});
   });
 program
   .command("play")
